@@ -2,7 +2,7 @@
   "name": "Gothic Percentage Calculator",
   "short_name": "Gothic %",
   "description": "A gothic-themed PWA for calculating percentages",
-  "start_url": "/",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#1a0d1a",
   "theme_color": "#1a0d1a",

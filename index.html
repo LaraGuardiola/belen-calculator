@@ -88,9 +88,9 @@
 
             .title {
                 font-family: "Creepster", cursive;
-                font-size: 2.5rem;
+                font-size: 24px;
                 text-align: center;
-                margin: 70px 0 40px 0;
+                margin: 70px 0 0px 0;
                 text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
                 color: #cc99ff;
                 letter-spacing: 2px;
@@ -252,13 +252,59 @@
             input[type="number"] {
                 -moz-appearance: textfield;
             }
+
+            .gothic-controls {
+                display: flex;
+                justify-content: center;
+                margin: 0.5em;
+            }
+
+            .gothic-controls .button {
+                background: linear-gradient(135deg, #7a3d7a 0%, #5c2e5c 100%);
+                border: 2px solid #cc99ff;
+                height: 60px;
+                width: 60px;
+                margin: 0.5em;
+                color: #e6ccff;
+                border-radius: 50%;
+                padding: 0.1em;
+                transition: all 0.3s ease;
+            }
+
+            .button img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+            .button:focus {
+                border-color: #cc99ff;
+                box-shadow: 0 0 15px rgba(204, 153, 255, 0.3);
+                transform: scale(1.02);
+            }
+
+            .gothic-controls .button.active {
+                background: linear-gradient(135deg, #cc99ff 0%, #9966cc 100%);
+                border-color: #ffffff;
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(204, 153, 255, 0.5);
+            }
         </style>
     </head>
     <body>
         <div class="app-container">
             <div class="gothic-decoration"></div>
 
-            <h1 class="title">Gothic %</h1>
+            <h3 class="title">Gothic %</h3>
+
+            <div class="gothic-controls">
+                <button class="button active">
+                    <img src="plus.svg" alt="Plus" />
+                </button>
+                <button class="button">
+                    <img src="minus.svg" alt="Minus" />
+                </button>
+            </div>
 
             <div class="calculator">
                 <div class="input-section">
@@ -315,6 +361,9 @@
                 });
             }
 
+            // Active operation tracking
+            let activeOperation = "plus"; // Default to plus
+
             function calculatePercentage() {
                 const value = parseFloat(
                     document.getElementById("value").value,
@@ -338,12 +387,19 @@
                 }
                 if (percent < 10) {
                     percent = percent.toString().padStart(2, "0");
-                    console.log(percent);
                 }
 
                 let valueToMultiply = Number(`1.${percent}`);
                 // Calculate percentage
-                const percentage = value * valueToMultiply;
+                let percentage = value * valueToMultiply;
+
+                if (activeOperation !== "plus") {
+                    if (percent < 10) {
+                        percent = percent.toString().padStart(2, "0");
+                    }
+                    let valueToSubstract = `0.${percent}`;
+                    percentage = value * (1 - Number(valueToSubstract));
+                }
 
                 // Format result to avoid too many decimal places
                 let formattedPercentage;
@@ -372,6 +428,37 @@
             document
                 .getElementById("percentage")
                 .addEventListener("input", calculatePercentage);
+
+            // Active button tracking
+            function updateActiveButton() {
+                const buttons = document.querySelectorAll(
+                    ".gothic-controls .button",
+                );
+                buttons.forEach((btn) => btn.classList.remove("active"));
+
+                if (activeOperation === "plus") {
+                    buttons[0].classList.add("active");
+                } else {
+                    buttons[1].classList.add("active");
+                }
+            }
+
+            // Add event listeners for the operation buttons
+            document
+                .querySelector(".gothic-controls .button:first-child")
+                .addEventListener("click", function () {
+                    activeOperation = "plus";
+                    updateActiveButton();
+                    calculatePercentage();
+                });
+
+            document
+                .querySelector(".gothic-controls .button:last-child")
+                .addEventListener("click", function () {
+                    activeOperation = "minus";
+                    updateActiveButton();
+                    calculatePercentage();
+                });
 
             // Prevent zoom on input focus on iOS
             document.addEventListener("touchstart", function () {}, {
